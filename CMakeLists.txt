@@ -10,6 +10,10 @@ else()
     add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
+add_subdirectory(external/eigen)
+
 add_executable(${PROJECT_NAME}
         src/main.cpp
 )
+
+target_link_libraries(${PROJECT_NAME} PRIVATE eigen)
