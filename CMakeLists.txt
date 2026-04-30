@@ -11,9 +11,25 @@ else()
 endif()
 
 add_subdirectory(external/eigen)
+add_subdirectory(external/SFML)
 
 add_executable(${PROJECT_NAME}
         src/main.cpp
+        src/core/Triangle.cpp
+        src/scene/Camera.cpp
+        src/scene/Scene.cpp
+        src/scene/Object.cpp
+        src/render/RenderVertex.h
+        src/render/Frame.cpp
+        src/render/Renderer.cpp
 )
 
-target_link_libraries(${PROJECT_NAME} PRIVATE eigen)
+target_include_directories(${PROJECT_NAME} PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/src)
+
+target_link_libraries(${PROJECT_NAME} PRIVATE
+        eigen
+        SFML::Graphics
+        SFML::Window
+        SFML::System
+)
