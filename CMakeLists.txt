@@ -16,6 +16,7 @@ add_subdirectory(external/SFML)
 add_executable(${PROJECT_NAME}
         src/main.cpp
         src/core/Triangle.cpp
+        src/core/Color.cpp
         src/scene/Camera.cpp
         src/scene/Scene.cpp
         src/scene/Object.cpp

@@ -1,6 +1,6 @@
 #include "Renderer.h"
 
-#include "SFML/Graphics/Color.hpp"
+#include "core/Color.h"
 
 namespace renderer {
 
@@ -58,7 +58,13 @@ void Renderer::draw_triangle(const RenderVertex& v0, const RenderVertex& v1, con
 
             if (w0 >= -EPS && w1 >= -EPS && w2 >= -EPS) {
                 float depth = w0 * v0.ndc().z() + w1 * v1.ndc().z() + w2 * v2.ndc().z();
-                frame.set_pixel(x, y, depth, sf::Color::Red);
+
+                float inv_z = w0 * v0.inv_z() + w1 * v1.inv_z() + w2 * v2.inv_z();
+                Color color = (w0 * v0.inv_z() * v0.color + w1 * v1.inv_z() * v1.color +
+                               w2 * v2.inv_z() * v2.color) *
+                              (1.0f / inv_z);
+
+                frame.set_pixel(x, y, depth, color.to_SFML());
             }
         }
     }
