@@ -2,8 +2,8 @@
 
 #include <vector>
 
-#include "../core/Linalg.h"
-#include "../core/Triangle.h"
+#include "core/Linalg.h"
+#include "core/Triangle.h"
 
 namespace renderer {
 

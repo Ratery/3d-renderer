@@ -1,7 +1,10 @@
 #pragma once
 
+#include <vector>
+
 #include "Frame.h"
 #include "RenderVertex.h"
+#include "core/Triangle.h"
 #include "scene/Scene.h"
 
 namespace renderer {
