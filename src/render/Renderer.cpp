@@ -1,85 +1,87 @@
 #include "Renderer.h"
 
 #include "core/Color.h"
+#include "core/Linalg.h"
 
 namespace renderer {
 
-Renderer::Renderer(Scene& scene) : scene_(scene) {}
+namespace {
 
-void Renderer::render_triangle(const Triangle& triangle, const Matrix4& MV, const Matrix4& MVP,
-                               Frame& frame) const {
-    auto rv0 = RenderVertex(triangle.get_vertices()[0], MV, MVP);
-    auto rv1 = RenderVertex(triangle.get_vertices()[1], MV, MVP);
-    auto rv2 = RenderVertex(triangle.get_vertices()[2], MV, MVP);
-
-    // clipping
-
-    draw_triangle(rv0, rv1, rv2, frame);
+Vector2 ndc_to_screen(const Vector4& ndc, const Frame& frame) {
+    return {(ndc.x() + 1.0f) / 2.0f * static_cast<float>(frame.width()),
+            (1.0f - (ndc.y() + 1.0f) / 2.0f) * static_cast<float>(frame.height())};
 }
 
-void Renderer::draw_triangle(const RenderVertex& v0, const RenderVertex& v1, const RenderVertex& v2,
-                             Frame& frame) const {
-    auto ndc_to_screen = [&frame](const Vector3& ndc) {
-        return Vector2((ndc.x() + 1.0f) / 2.0f * frame.get_width(),
-                       (1.0f - (ndc.y() + 1.0f) / 2.0f) * frame.get_height());
-    };
+Index clamp_start(float val, Index max_idx) {
+    return std::clamp<Index>(static_cast<Index>(std::floor(val)), 0, max_idx);
+}
 
-    // check NDC
-    for (int i = 0; i < 3; i++) {
-        assert(-1.0f <= v0.ndc()[i] && v0.ndc()[i] <= 1.0f);
-        assert(-1.0f <= v1.ndc()[i] && v1.ndc()[i] <= 1.0f);
-        assert(-1.0f <= v2.ndc()[i] && v2.ndc()[i] <= 1.0f);
-    }
+Index clamp_end(float val, Index max_idx) {
+    return std::clamp<Index>(static_cast<Index>(std::ceil(val)), 0, max_idx);
+}
 
-    Vector2 p0 = ndc_to_screen(v0.ndc());
-    Vector2 p1 = ndc_to_screen(v1.ndc());
-    Vector2 p2 = ndc_to_screen(v2.ndc());
+bool is_in_std_box(const Vector4& ndc) {
+    return -1.0f <= ndc.x() && ndc.x() <= 1.0f && -1.0f <= ndc.y() && ndc.y() <= 1.0f &&
+           -1.0f <= ndc.z() && ndc.z() <= 1.0f;
+}
 
-    int min_x = static_cast<int>(std::floor(std::min({p0.x(), p1.x(), p2.x()})));
-    min_x = std::max(0, min_x);
+}  // namespace
 
-    int max_x = static_cast<int>(std::ceil(std::max({p0.x(), p1.x(), p2.x()})));
-    max_x = std::min(max_x, frame.get_width() - 1);
+Frame Renderer::render_triangle(Triangle triangle, const Matrix4& MVP, Frame&& frame) const {
+    triangle.transform(MVP);
+    Vector3 inv_z_row = triangle.get_vertices().row(3).cwiseInverse().eval();
+    triangle.to_ndc();
 
-    int min_y = static_cast<int>(std::floor(std::min({p0.y(), p1.y(), p2.y()})));
-    min_y = std::max(0, min_y);
+    auto v0 = triangle.vertex(0);
+    auto v1 = triangle.vertex(1);
+    auto v2 = triangle.vertex(2);
 
-    int max_y = static_cast<int>(std::ceil(std::max({p0.y(), p1.y(), p2.y()})));
-    max_y = std::min(max_y, frame.get_height() - 1);
+    assert(is_in_std_box(v0));
+    assert(is_in_std_box(v1));
+    assert(is_in_std_box(v2));
 
-    for (int x = std::max(0, min_x); x <= std::min(max_x, frame.get_width() - 1); x++) {
-        for (int y = min_y; y <= max_y; y++) {
-            Vector2 u = Vector2(x + 0.5f, y + 0.5f);
+    Vector2 p0 = ndc_to_screen(v0, frame);
+    Vector2 p1 = ndc_to_screen(v1, frame);
+    Vector2 p2 = ndc_to_screen(v2, frame);
 
-            float w = (p2 - p0).cross(p1 - p0);
-            float w1 = (p2 - p0).cross(u - p0) / w;
-            float w2 = (u - p0).cross(p1 - p0) / w;
-            float w0 = 1.0f - w1 - w2;
+    Index start_x = clamp_start(std::min({p0.x(), p1.x(), p2.x()}), frame.width() - 1);
+    Index end_x = clamp_end(std::max({p0.x(), p1.x(), p2.x()}), frame.width() - 1);
 
-            if (w0 >= -EPS && w1 >= -EPS && w2 >= -EPS) {
-                float depth = w0 * v0.ndc().z() + w1 * v1.ndc().z() + w2 * v2.ndc().z();
+    Index start_y = clamp_start(std::min({p0.y(), p1.y(), p2.y()}), frame.height() - 1);
+    Index end_y = clamp_end(std::max({p0.y(), p1.y(), p2.y()}), frame.height() - 1);
 
-                float inv_z = w0 * v0.inv_z() + w1 * v1.inv_z() + w2 * v2.inv_z();
-                Color color = (w0 * v0.inv_z() * v0.color + w1 * v1.inv_z() * v1.color +
-                               w2 * v2.inv_z() * v2.color) *
-                              (1.0f / inv_z);
+    for (Index x = start_x; x <= end_x; x++) {
+        for (Index y = start_y; y <= end_y; y++) {
+            Vector2 u = Vector2(static_cast<float>(x) + 0.5f, static_cast<float>(y) + 0.5f);
 
-                frame.set_pixel(x, y, depth, color.to_SFML());
+            float area = (p2 - p0).cross(p1 - p0);
+            Vector3 w;
+            w(1) = (p2 - p0).cross(u - p0) / area;
+            w(2) = (u - p0).cross(p1 - p0) / area;
+            w(0) = 1.0f - w(1) - w(2);
+
+            if (w(0) >= -eps && w(1) >= -eps && w(2) >= -eps) {
+                auto& ndc_z_row = triangle.get_vertices().row(2);
+                float depth = ndc_z_row.dot(w);
+
+                float inv_z = inv_z_row.dot(w);
+                auto color_weights = inv_z_row.cwiseProduct(w) * (1.0f / inv_z);
+                frame.set_pixel(x, y, depth, triangle.get_weighted_color(color_weights));
             }
         }
     }
+    return frame;
 }
 
-Frame Renderer::make_frame(Frame&& frame) const {
+Frame Renderer::make_frame(const Scene& scene, Frame&& frame) const {
     frame.reset_z_buffer();
-    const auto& camera = scene_.get_camera();
-    auto VP = camera.get_projection_matrix() * camera.get_view_matrix().inverse();
-    for (auto& object : scene_.get_objects()) {
+    const auto& camera = scene.get_camera();
+    auto VP = camera.make_projection_matrix() * camera.make_view_matrix();
+    for (auto& object : scene.get_objects()) {
         for (auto& triangle : object.get_triangles()) {
-            auto& M = object.get_transform_matrix();
-            auto MV = camera.get_view_matrix().inverse() * M;
+            const auto& M = object.get_transform_matrix();
             auto MVP = VP * M;
-            render_triangle(triangle, MV, MVP, frame);
+            frame = render_triangle(triangle, MVP, std::move(frame));
         }
     }
     return frame;

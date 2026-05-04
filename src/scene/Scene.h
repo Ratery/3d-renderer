@@ -9,14 +9,14 @@ namespace renderer {
 
 class Scene {
    public:
-    explicit Scene(const Camera& camera);
+    explicit Scene(Camera&& camera);
 
     void add_object(const Object& obj);
     void add_object(Object&& obj);
 
     const std::vector<Object>& get_objects() const;
 
-    Camera& get_camera();
+    Camera& camera();
     const Camera& get_camera() const;
 
    private:

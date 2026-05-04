@@ -6,7 +6,7 @@
 
 namespace renderer {
 
-Scene::Scene(const Camera& camera) : camera_(camera) {}
+Scene::Scene(Camera&& camera) : camera_(std::move(camera)) {}
 
 const std::vector<Object>& Scene::get_objects() const {
     return objects_;
@@ -20,7 +20,7 @@ void Scene::add_object(Object&& obj) {
     objects_.push_back(std::move(obj));
 }
 
-Camera& Scene::get_camera() {
+Camera& Scene::camera() {
     return camera_;
 }
 

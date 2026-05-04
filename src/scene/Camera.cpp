@@ -11,11 +11,11 @@ Camera::Camera(float near, float far, float fov, float aspect_ratio)
       aspect_ratio_(aspect_ratio),
       view_matrix_(Matrix4::Identity()) {}
 
-Matrix4 Camera::get_view_matrix() const {
-    return view_matrix_;
+Matrix4 Camera::make_view_matrix() const {
+    return view_matrix_.inverse();  // TODO: optimize not to do .inverse() everytime
 }
 
-Matrix4 Camera::get_projection_matrix() const {
+Matrix4 Camera::make_projection_matrix() const {  // TODO: split into make() and get() methods
     float right = near_ * std::tan(fov_ / 2.0f);
     float top = right * aspect_ratio_;
     return Matrix4{

@@ -2,22 +2,35 @@
 
 namespace renderer {
 
-Color::Color(float r, float g, float b, float a) : data_(r, g, b, a) {}
-
-Color Color::from_SFML(const sf::Color& sfColor) {
-    return {static_cast<float>(sfColor.r) / 255.0f, static_cast<float>(sfColor.g) / 255.0f,
-            static_cast<float>(sfColor.b) / 255.0f, static_cast<float>(sfColor.a) / 255.0f};
+Color::Color(float r, float g, float b, float a) : data_(r, g, b, a) {
+    data_ = data_.cwiseMax(0.0f).cwiseMin(1.0f);
 }
 
-sf::Color Color::to_SFML() const {
-    return {
-        static_cast<std::uint8_t>(data_(0) * 255.0f), static_cast<std::uint8_t>(data_(1) * 255.0f),
-        static_cast<std::uint8_t>(data_(2) * 255.0f), static_cast<std::uint8_t>(data_(3) * 255.0f)};
+float Color::r() const {
+    return data_(0);
+}
+
+float Color::g() const {
+    return data_(1);
+}
+
+float Color::b() const {
+    return data_(2);
+}
+
+float Color::a() const {
+    return data_(3);
 }
 
 Color& Color::operator+=(const Color& other) {
     data_ = (data_ + other.data_).cwiseMin(1.0f);
     return *this;
+}
+
+Color Color::operator+(const Color& other) const {
+    Color result = *this;
+    result += other;
+    return result;
 }
 
 Color& Color::operator*=(float scalar) {
@@ -30,19 +43,16 @@ Color& Color::operator*=(const Color& other) {
     return *this;
 }
 
-Color Color::operator+(const Color& other) const {
-    Color new_color = *this;
-    return new_color += other;
-}
-
 Color Color::operator*(float scalar) const {
-    Color new_color = *this;
-    return new_color *= scalar;
+    Color result = *this;
+    result *= scalar;
+    return result;
 }
 
 Color Color::operator*(const Color& other) const {
-    Color new_color = *this;
-    return new_color *= other;
+    Color result = *this;
+    result *= other;
+    return result;
 }
 
 Color operator*(float scalar, const Color& color) {

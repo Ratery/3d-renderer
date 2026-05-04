@@ -5,13 +5,13 @@
 namespace renderer {
 
 class Camera {
-public:
+   public:
     explicit Camera(float near, float far, float fov, float aspect_ratio);
 
-    Matrix4 get_view_matrix() const;
-    Matrix4 get_projection_matrix() const;
+    Matrix4 make_view_matrix() const;
+    Matrix4 make_projection_matrix() const;
 
-private:
+   private:
     float near_;
     float far_;
     float fov_;

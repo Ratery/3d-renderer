@@ -20,7 +20,6 @@ add_executable(${PROJECT_NAME}
         src/scene/Camera.cpp
         src/scene/Scene.cpp
         src/scene/Object.cpp
-        src/render/RenderVertex.h
         src/render/Frame.cpp
         src/render/Renderer.cpp
 )
