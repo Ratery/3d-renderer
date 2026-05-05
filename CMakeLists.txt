@@ -15,7 +15,6 @@ add_subdirectory(external/SFML)
 
 add_executable(${PROJECT_NAME}
         src/main.cpp
-        src/exceptions/Except.cpp
         src/core/Triangle.cpp
         src/core/Color.cpp
         src/scene/Camera.cpp
@@ -23,6 +22,9 @@ add_executable(${PROJECT_NAME}
         src/scene/Object.cpp
         src/render/Frame.cpp
         src/render/Renderer.cpp
+        src/exceptions/Except.cpp
+        src/application/View.cpp
+        src/application/Application.cpp
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE

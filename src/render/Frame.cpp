@@ -40,6 +40,10 @@ Height Frame::height() const {
     return Height{height_};
 }
 
+float Frame::aspect_ratio() const {
+    return static_cast<float>(height_) / static_cast<float>(width_);
+}
+
 std::uint8_t& Frame::pixels(Index x, Index y) {
     return pixels_[4 * (x + y * width_)];
 }

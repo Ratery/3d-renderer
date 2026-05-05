@@ -25,6 +25,8 @@ class Frame {
     Width width() const;
     Height height() const;
 
+    float aspect_ratio() const;
+
    private:
     Index width_;
     Index height_;

@@ -76,7 +76,7 @@ Frame Renderer::render_triangle(Triangle triangle, const Matrix4& MVP, Frame&& f
 Frame Renderer::make_frame(const Scene& scene, Frame&& frame) const {
     frame.reset_z_buffer();
     const auto& camera = scene.get_camera();
-    auto VP = camera.make_projection_matrix() * camera.make_view_matrix();
+    auto VP = camera.make_projection_matrix(frame.aspect_ratio()) * camera.make_view_matrix();
     for (auto& object : scene.get_objects()) {
         for (auto& triangle : object.get_triangles()) {
             const auto& M = object.get_transform_matrix();
