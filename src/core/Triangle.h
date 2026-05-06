@@ -9,17 +9,18 @@ namespace renderer {
 
 class Triangle {
    public:
-    Triangle(const Matrix4x3& vertices, const Matrix4x3& normals, const std::array<Color, 3>& colors);
+    Triangle(const Matrix4x3& vertices, const Matrix4x3& normals,
+             const std::array<Color, 3>& colors);
 
     Triangle(const Vector4& v0, const Vector4& v1, const Vector4& v2, const Vector4& n0,
              const Vector4& n1, const Vector4& n2, const Color& c0, const Color& c1,
              const Color& c2);
 
-    Triangle(const Vector4& v0, const Vector4& v1, const Vector4& v2, const Color& color);
+    Triangle(const Vector3& v0, const Vector3& v1, const Vector3& v2, const Vector3& n0,
+             const Vector3& n1, const Vector3& n2, const Color& c);
 
-    Triangle(const Vector4& v0, const Vector4& v1, const Vector4& v2);
-
-    Triangle(const Vector3& v0, const Vector3& v1, const Vector3& v2, const Color& color);
+    Triangle(const Vector3& v0, const Vector3& v1, const Vector3& v2, const Vector3& n,
+             const Color& c);
 
     void transform(const Matrix4& matrix);
 

@@ -13,18 +13,21 @@ Triangle::Triangle(const Vector4& v0, const Vector4& v1, const Vector4& v2, cons
       normals_((Matrix4x3() << n0, n1, n2).finished()),
       colors_({c0, c1, c2}) {}
 
-Triangle::Triangle(const Vector4& v0, const Vector4& v1, const Vector4& v2, const Color& color)
-    : vertices_((Matrix4x3() << v0, v1, v2).finished()),
-      normals_(Matrix4x3::Zero()),
-      colors_({color, color, color}) {}
-
-Triangle::Triangle(const Vector4& v0, const Vector4& v1, const Vector4& v2)
-    : Triangle(v0, v1, v2, Color(1, 1, 1)) {}
-
-Triangle::Triangle(const Vector3& v0, const Vector3& v1, const Vector3& v2, const Color& color)
+Triangle::Triangle(const Vector3& v0, const Vector3& v1, const Vector3& v2, const Vector3& n0,
+                   const Vector3& n1, const Vector3& n2, const Color& c)
     : vertices_((Matrix4x3() << v0.homogeneous(), v1.homogeneous(), v2.homogeneous()).finished()),
-      normals_(Matrix4x3::Zero()),
-      colors_({color, color, color}) {}
+      normals_((Matrix4x3() << n0.homogeneous(), n1.homogeneous(), n2.homogeneous()).finished()),
+      colors_({c, c, c}) {
+    normals_.row(3).setZero();
+}
+
+Triangle::Triangle(const Vector3& v0, const Vector3& v1, const Vector3& v2, const Vector3& n,
+                   const Color& c)
+    : vertices_((Matrix4x3() << v0.homogeneous(), v1.homogeneous(), v2.homogeneous()).finished()),
+      normals_((Matrix4x3() << n.homogeneous(), n.homogeneous(), n.homogeneous()).finished()),
+      colors_({c, c, c}) {
+    normals_.row(3).setZero();
+}
 
 void Triangle::transform(const Matrix4& matrix) {
     vertices_ = matrix * vertices_;

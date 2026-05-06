@@ -22,6 +22,7 @@ add_executable(${PROJECT_NAME}
         src/scene/Object.cpp
         src/render/Frame.cpp
         src/render/Renderer.cpp
+        src/loader/ObjLoader.cpp
         src/exceptions/Except.cpp
         src/application/View.cpp
         src/application/Application.cpp
