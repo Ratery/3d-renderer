@@ -28,4 +28,20 @@ const Camera& Scene::get_camera() const {
     return camera_;
 }
 
+const AmbientLight& Scene::get_ambient_light() const {
+    return ambient_light_;
+}
+
+const std::vector<DirectionalLight>& Scene::get_directional_lights() const {
+    return directional_lights_;
+}
+
+void Scene::set_ambient_light(const AmbientLight& light) {
+    ambient_light_ = light;
+}
+
+void Scene::add_directional_light(const DirectionalLight& light) {
+    directional_lights_.push_back(light);
+}
+
 }  // namespace renderer

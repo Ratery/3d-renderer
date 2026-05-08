@@ -2,13 +2,12 @@
 
 #include <utility>
 
+#include "lighting/DirectionalLight.h"
+#include "loader/ObjLoader.h"
+
 namespace renderer {
 
 namespace {
-
-Color from_sf_color(const sf::Color& sf_color) {
-    return {sf_color.r / 255.0f, sf_color.g / 255.0f, sf_color.b / 255.0f, sf_color.a / 255.0f};
-}
 
 Frame create_frame_for_window(const sf::RenderWindow& window) {
     auto [width, height] = window.getSize();
@@ -37,34 +36,20 @@ void Application::run() {
 }
 
 Scene Application::make_scene() {
-    Camera camera(0.1f, 1000.0f, M_PI / 2.0f);
+    Camera camera(0.01f, 1000.0f, M_PI / 2.0f);
     Scene scene(std::move(camera));
 
-    // Object 1
-    Eigen::Affine3f transform_1 = Eigen::Affine3f::Identity();
-    transform_1.translate(Eigen::Vector3f(0.0f, 0.0f, 2.0f));
-    transform_1.rotate(Eigen::AngleAxisf(M_PI / 2.5f, Eigen::Vector3f::UnitX()));
-    Eigen::Matrix4f M_1 = transform_1.matrix();
+    auto obj = ObjLoader::load_from_file("model_1.obj");
+    Eigen::Affine3f transform = Eigen::Affine3f::Identity();
+    transform.translate(Eigen::Vector3f(-0.2f, -0.35f, 0.9f));
+    transform.rotate(Eigen::AngleAxisf(M_PI / 7.0f, -Eigen::Vector3f::UnitX()));
+    transform.rotate(Eigen::AngleAxisf(M_PI / 2.0f, -Eigen::Vector3f::UnitZ()));
+    obj.set_transform_matrix(transform.matrix());
+    scene.add_object(obj);
 
-    Object obj1({}, M_1);
-    obj1.add_triangle(Triangle(Vector4(-1.0f, 0, 0.0f, 1), Vector4(1.0f, 0, 0.0f, 1),
-                               Vector4(0.0f, 8.0f, 0.0f, 1), Vector4::Zero(), Vector4::Zero(),
-                               Vector4::Zero(), from_sf_color(sf::Color::Red),
-                               from_sf_color(sf::Color::Yellow), from_sf_color(sf::Color::White)));
-    scene.add_object(obj1);
+    const DirectionalLight sun{Color(1.0f, 1.0f, 1.0f), Vector3(0.0f, -1.0f, 0.6f)};
+    scene.add_directional_light(sun);
 
-    // Object 2
-    Eigen::Affine3f transform_2 = Eigen::Affine3f::Identity();
-    transform_2.translate(Eigen::Vector3f(0.0f, 0.2f, 4.0f));
-    transform_2.rotate(Eigen::AngleAxisf(M_PI / 4.0f, -Eigen::Vector3f::UnitZ()));
-    Eigen::Matrix4f M_2 = transform_2.matrix();
-
-    Object obj2({}, M_2);
-    obj2.add_triangle(Triangle(Vector4(-1.0f, 0, 0.0f, 1), Vector4(1.0f, 0, 0.0f, 1),
-                               Vector4(0.0f, 1.0f, 0.0f, 1), Vector4::Zero(), Vector4::Zero(),
-                               Vector4::Zero(), from_sf_color(sf::Color::Green),
-                               from_sf_color(sf::Color::Green), from_sf_color(sf::Color::Blue)));
-    scene.add_object(obj2);
     return scene;
 }
 

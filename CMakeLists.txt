@@ -16,12 +16,16 @@ add_subdirectory(external/SFML)
 add_executable(${PROJECT_NAME}
         src/main.cpp
         src/core/Triangle.cpp
-        src/core/Color.cpp
         src/scene/Camera.cpp
         src/scene/Scene.cpp
         src/scene/Object.cpp
         src/render/Frame.cpp
         src/render/Renderer.cpp
+        src/lighting/Color.cpp
+        src/lighting/Material.cpp
+        src/lighting/AmbientLight.cpp
+        src/lighting/DirectionalLight.cpp
+        src/lighting/PhongShader.cpp
         src/loader/ObjLoader.cpp
         src/exceptions/Except.cpp
         src/application/View.cpp

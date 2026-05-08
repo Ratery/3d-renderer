@@ -133,17 +133,12 @@ Triangle ObjLoader::make_triangle(const FaceVertex& v0, const FaceVertex& v1,
     auto& p1 = positions_[v1.position_idx];
     auto& p2 = positions_[v2.position_idx];
     if (v0.normal_idx != -1 && v1.normal_idx != -1 && v2.normal_idx != -1) {
-        return {p0,
-                p1,
-                p2,
-                normals_[v0.normal_idx],
-                normals_[v1.normal_idx],
-                normals_[v2.normal_idx],
-                Color(1.0f, 1.0f, 1.0f)};
+        return {
+            p0, p1, p2, normals_[v0.normal_idx], normals_[v1.normal_idx], normals_[v2.normal_idx]};
     }
 
     Vector3 face_normal = (p1 - p0).cross(p2 - p0).normalized();
-    return {p0, p1, p2, face_normal, Color(1.0f, 1.0f, 1.0f)};
+    return {p0, p1, p2, face_normal};
 }
 
 }  // namespace renderer
