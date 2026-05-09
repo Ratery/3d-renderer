@@ -1,19 +1,21 @@
 #include "Frame.h"
 
 #include <cassert>
+#include <algorithm>
 
 namespace renderer {
 
 Frame::Frame(Width width, Height height)
     : width_(width),
       height_(height),
-      pixels_(4 * width_ * height_),
+      pixels_(4 * width_ * height_, 0.0f),
       z_buffer_(width_ * height_, max_depth_) {
     assert(width_ > 0 && height_ > 0);
 }
 
-void Frame::reset_z_buffer() {
-    z_buffer_.assign(width_ * height_, max_depth_);
+void Frame::reset() {
+    std::ranges::fill(pixels_, 0.0f);
+    std::ranges::fill(z_buffer_, max_depth_);
 }
 
 void Frame::set_pixel(Index x, Index y, float depth, const Color& color) {

@@ -17,7 +17,7 @@ class Frame {
 
     void set_pixel(Index x, Index y, float depth, const Color& color);
 
-    void reset_z_buffer();
+    void reset();
 
     void get_pixel(Index x, Index y) const;
     const std::vector<std::uint8_t>& get_pixels() const;

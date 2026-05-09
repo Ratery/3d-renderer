@@ -79,7 +79,7 @@ Frame Renderer::render_triangle(const Triangle& triangle, const Matrix4& MV, con
 }
 
 Frame Renderer::make_frame(const Scene& scene, Frame&& frame) const {
-    frame.reset_z_buffer();
+    frame.reset();
     const auto& camera = scene.get_camera();
     const auto& view_matrix = camera.make_view_matrix();
     PhongShader shader(scene.get_ambient_light(), scene.get_directional_lights(), view_matrix);
