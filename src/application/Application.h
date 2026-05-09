@@ -16,8 +16,12 @@ class Application {
     Renderer renderer_;
     Scene scene_;
     View view_;
+    static constexpr float camera_move_speed = 0.2f;
+    static constexpr float camera_rotate_speed = 0.05f;
 
     static Scene make_scene();
+
+    void handle_keyboard_input();
 };
 
 }  // namespace renderer

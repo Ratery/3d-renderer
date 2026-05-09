@@ -23,15 +23,15 @@ void Application::run() {
     auto& window = view_.window();
     auto frame = create_frame_for_window(window);
 
-    frame = renderer_.make_frame(scene_, std::move(frame));
-    view_.show(frame);
-
     while (window.isOpen()) {
         while (const std::optional event = window.pollEvent()) {
             if (event->is<sf::Event::Closed>()) {
                 window.close();
             }
         }
+        handle_keyboard_input();
+        frame = renderer_.make_frame(scene_, std::move(frame));
+        view_.show(frame);
     }
 }
 
@@ -51,6 +51,45 @@ Scene Application::make_scene() {
     scene.add_directional_light(sun);
 
     return scene;
+}
+
+void Application::handle_keyboard_input() {
+    using sf::Keyboard::isKeyPressed;
+    using sf::Keyboard::Key;
+
+    auto& camera = scene_.camera();
+
+    if (isKeyPressed(Key::W)) {
+        camera.move_forward(camera_move_speed);
+    }
+    if (isKeyPressed(Key::S)) {
+        camera.move_backward(camera_move_speed);
+    }
+    if (isKeyPressed(Key::A)) {
+        camera.move_left(camera_move_speed);
+    }
+    if (isKeyPressed(Key::D)) {
+        camera.move_right(camera_move_speed);
+    }
+    if (isKeyPressed(Key::Z)) {
+        camera.move_up(camera_move_speed);
+    }
+    if (isKeyPressed(Key::Space)) {
+        camera.move_down(camera_move_speed);
+    }
+
+    if (isKeyPressed(Key::Q)) {
+        camera.rotate_horizontal(-camera_rotate_speed);
+    }
+    if (isKeyPressed(Key::E)) {
+        camera.rotate_horizontal(camera_rotate_speed);
+    }
+    if (isKeyPressed(Key::R)) {
+        camera.rotate_vertical(camera_rotate_speed);
+    }
+    if (isKeyPressed(Key::F)) {
+        camera.rotate_vertical(-camera_rotate_speed);
+    }
 }
 
 }  // namespace renderer
