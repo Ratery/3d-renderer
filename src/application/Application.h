@@ -16,12 +16,16 @@ class Application {
     Renderer renderer_;
     Scene scene_;
     View view_;
+    sf::Vector2i mouse_pos_;
     static constexpr float camera_move_speed = 0.2f;
-    static constexpr float camera_rotate_speed = 0.05f;
+    static constexpr float mouse_sensitivity_ = 0.002f;
 
     static Scene make_scene();
 
     void handle_keyboard_input();
+    void handle_mouse_input();
+
+    float calc_camera_rotation_angle(int mouse_offset) const;
 };
 
 }  // namespace renderer

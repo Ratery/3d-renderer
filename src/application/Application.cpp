@@ -30,6 +30,7 @@ void Application::run() {
             }
         }
         handle_keyboard_input();
+        handle_mouse_input();
         frame = renderer_.make_frame(scene_, std::move(frame));
         view_.show(frame);
     }
@@ -71,25 +72,31 @@ void Application::handle_keyboard_input() {
     if (isKeyPressed(Key::D)) {
         camera.move_right(camera_move_speed);
     }
-    if (isKeyPressed(Key::Z)) {
+    if (isKeyPressed(Key::Q)) {
         camera.move_up(camera_move_speed);
     }
-    if (isKeyPressed(Key::Space)) {
+    if (isKeyPressed(Key::E)) {
         camera.move_down(camera_move_speed);
     }
+}
 
-    if (isKeyPressed(Key::Q)) {
-        camera.rotate_horizontal(-camera_rotate_speed);
+void Application::handle_mouse_input() {
+    sf::Vector2i current_pos = sf::Mouse::getPosition(view_.window());
+    if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
+        sf::Vector2i delta = current_pos - mouse_pos_;
+        auto& camera = scene_.camera();
+        if (delta.x) {
+            camera.rotate_horizontal(-calc_camera_rotation_angle(delta.x));
+        }
+        if (delta.y) {
+            camera.rotate_vertical(-calc_camera_rotation_angle(delta.y));
+        }
     }
-    if (isKeyPressed(Key::E)) {
-        camera.rotate_horizontal(camera_rotate_speed);
-    }
-    if (isKeyPressed(Key::R)) {
-        camera.rotate_vertical(camera_rotate_speed);
-    }
-    if (isKeyPressed(Key::F)) {
-        camera.rotate_vertical(-camera_rotate_speed);
-    }
+    mouse_pos_ = current_pos;
+}
+
+float Application::calc_camera_rotation_angle(int mouse_offset) const {
+    return static_cast<float>(mouse_offset) * mouse_sensitivity_;
 }
 
 }  // namespace renderer
