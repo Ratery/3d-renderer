@@ -56,26 +56,26 @@ Scene Application::make_scene() {
 
 void Application::handle_keyboard_input() {
     using sf::Keyboard::isKeyPressed;
-    using sf::Keyboard::Key;
+    using sf::Keyboard::Scancode;
 
     auto& camera = scene_.camera();
 
-    if (isKeyPressed(Key::W)) {
+    if (isKeyPressed(Scancode::W)) {
         camera.move_forward(camera_move_speed);
     }
-    if (isKeyPressed(Key::S)) {
+    if (isKeyPressed(Scancode::S)) {
         camera.move_backward(camera_move_speed);
     }
-    if (isKeyPressed(Key::A)) {
+    if (isKeyPressed(Scancode::A)) {
         camera.move_left(camera_move_speed);
     }
-    if (isKeyPressed(Key::D)) {
+    if (isKeyPressed(Scancode::D)) {
         camera.move_right(camera_move_speed);
     }
-    if (isKeyPressed(Key::Q)) {
+    if (isKeyPressed(Scancode::Q)) {
         camera.move_up(camera_move_speed);
     }
-    if (isKeyPressed(Key::E)) {
+    if (isKeyPressed(Scancode::E)) {
         camera.move_down(camera_move_speed);
     }
 }
