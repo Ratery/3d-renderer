@@ -4,12 +4,6 @@ project(3d-renderer)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-if(MSVC)
-    add_compile_options(/W4)
-else()
-    add_compile_options(-Wall -Wextra -Wpedantic)
-endif()
-
 add_subdirectory(external/eigen)
 add_subdirectory(external/SFML)
 
@@ -42,3 +36,21 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
         SFML::Window
         SFML::System
 )
+
+set(WARNINGS
+        $<$<CXX_COMPILER_ID:MSVC>:/W4>
+        $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wall -Wextra -Wpedantic>
+)
+
+target_compile_options(${PROJECT_NAME} PRIVATE
+        ${WARNINGS}
+        $<$<CONFIG:Debug>:-O0 -g>
+        $<$<CONFIG:Release>:-O3 -march=native -ffast-math>
+)
+
+target_compile_definitions(${PROJECT_NAME} PRIVATE
+        $<$<CONFIG:Debug>:DEBUG>
+        $<$<CONFIG:Release>:NDEBUG>
+)
+
+set(CMAKE_INTERPROCEDURAL_OPTIMIZATION_RELEASE ON)

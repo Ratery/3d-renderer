@@ -1,5 +1,7 @@
 #include "Renderer.h"
 
+#include <cassert>
+
 #include "core/Linalg.h"
 #include "lighting/Color.h"
 

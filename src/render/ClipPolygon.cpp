@@ -1,5 +1,7 @@
 #include "ClipPolygon.h"
 
+#include <cassert>
+
 namespace renderer {
 
 ClipPolygon::ClipPolygon() : count_(0) {}
