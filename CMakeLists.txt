@@ -19,6 +19,7 @@ add_executable(${PROJECT_NAME}
         src/scene/Camera.cpp
         src/scene/Scene.cpp
         src/scene/Object.cpp
+        src/render/ClipPolygon.cpp
         src/render/Frame.cpp
         src/render/Renderer.cpp
         src/lighting/Color.cpp
