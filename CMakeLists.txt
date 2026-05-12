@@ -30,11 +30,14 @@ add_executable(${PROJECT_NAME}
 target_include_directories(${PROJECT_NAME} PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
+find_package(OpenMP REQUIRED)
+
 target_link_libraries(${PROJECT_NAME} PRIVATE
         eigen
         SFML::Graphics
         SFML::Window
         SFML::System
+        OpenMP::OpenMP_CXX
 )
 
 set(WARNINGS
@@ -54,3 +57,9 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE
 )
 
 set(CMAKE_INTERPROCEDURAL_OPTIMIZATION_RELEASE ON)
+
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${CMAKE_SOURCE_DIR}/assets
+        $<TARGET_FILE_DIR:${PROJECT_NAME}>/assets
+)

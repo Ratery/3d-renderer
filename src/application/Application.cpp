@@ -1,5 +1,6 @@
 #include "Application.h"
 
+#include <SFML/System/Clock.hpp>
 #include <utility>
 
 #include "lighting/DirectionalLight.h"
@@ -23,7 +24,22 @@ void Application::run() {
     auto& window = view_.window();
     auto frame = create_frame_for_window(window);
 
+    sf::Clock clock;
+    float elapsed = 0.0f;
+    int frames = 0;
+
     while (window.isOpen()) {
+        float dt = clock.restart().asSeconds();
+        elapsed += dt;
+        frames++;
+
+        if (elapsed >= 0.25f) {
+            float fps = static_cast<float>(frames) / elapsed;
+            frames = 0;
+            elapsed = 0.0f;
+            view_.set_fps(fps);
+        }
+
         while (const std::optional event = window.pollEvent()) {
             if (event->is<sf::Event::Closed>()) {
                 window.close();
