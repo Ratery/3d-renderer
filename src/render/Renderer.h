@@ -18,9 +18,9 @@ class Renderer {
    private:
     constexpr static float eps_ = 1e-5f;
 
-    Frame rasterize_triangle(const ClipVertex& v0, const ClipVertex& v1, const ClipVertex& v2,
-                             const Material& material, const PhongShader& shader,
-                             Frame&& frame) const;
+    void rasterize_triangle(const ClipVertex& v0, const ClipVertex& v1, const ClipVertex& v2,
+                            const Material& material, const PhongShader& shader,
+                            Frame* frame) const;
 
     ClipPolygon clip_polygon_against_plane(const ClipPolygon& polygon_in,
                                            FrustumPlaneType plane) const;

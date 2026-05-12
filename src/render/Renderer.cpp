@@ -34,9 +34,9 @@ ClipVertex interpolate_clip_vertex(const ClipVertex& a, const ClipVertex& b, flo
 
 }  // namespace
 
-Frame Renderer::rasterize_triangle(const ClipVertex& v0, const ClipVertex& v1, const ClipVertex& v2,
-                                   const Material& material, const PhongShader& shader,
-                                   Frame&& frame) const {
+void Renderer::rasterize_triangle(const ClipVertex& v0, const ClipVertex& v1, const ClipVertex& v2,
+                                  const Material& material, const PhongShader& shader,
+                                  Frame* frame) const {
     Vector3 ndc_0 = v0.clip_pos.hnormalized();
     Vector3 ndc_1 = v1.clip_pos.hnormalized();
     Vector3 ndc_2 = v2.clip_pos.hnormalized();
@@ -45,15 +45,15 @@ Frame Renderer::rasterize_triangle(const ClipVertex& v0, const ClipVertex& v1, c
     assert(is_in_std_box(ndc_1, eps_));
     assert(is_in_std_box(ndc_2, eps_));
 
-    Vector2 p0 = ndc_to_screen(ndc_0, frame);
-    Vector2 p1 = ndc_to_screen(ndc_1, frame);
-    Vector2 p2 = ndc_to_screen(ndc_2, frame);
+    Vector2 p0 = ndc_to_screen(ndc_0, *frame);
+    Vector2 p1 = ndc_to_screen(ndc_1, *frame);
+    Vector2 p2 = ndc_to_screen(ndc_2, *frame);
 
-    Index start_x = clamp_start(std::min({p0.x(), p1.x(), p2.x()}), frame.width() - 1);
-    Index end_x = clamp_end(std::max({p0.x(), p1.x(), p2.x()}), frame.width() - 1);
+    Index start_x = clamp_start(std::min({p0.x(), p1.x(), p2.x()}), frame->width() - 1);
+    Index end_x = clamp_end(std::max({p0.x(), p1.x(), p2.x()}), frame->width() - 1);
 
-    Index start_y = clamp_start(std::min({p0.y(), p1.y(), p2.y()}), frame.height() - 1);
-    Index end_y = clamp_end(std::max({p0.y(), p1.y(), p2.y()}), frame.height() - 1);
+    Index start_y = clamp_start(std::min({p0.y(), p1.y(), p2.y()}), frame->height() - 1);
+    Index end_y = clamp_end(std::max({p0.y(), p1.y(), p2.y()}), frame->height() - 1);
 
     Matrix3 view_pos;
     view_pos << v0.view_pos, v1.view_pos, v2.view_pos;
@@ -79,11 +79,10 @@ Frame Renderer::rasterize_triangle(const ClipVertex& v0, const ClipVertex& v1, c
                 Vector3 frag_normal = (view_normals * lerp_weights).normalized();
                 Vector3 frag_view_pos = view_pos * lerp_weights;
                 Color color = shader.shade(material, frag_normal, frag_view_pos);
-                frame.set_pixel(x, y, depth, color);
+                frame->set_pixel(x, y, depth, color);
             }
         }
     }
-    return frame;
 }
 
 Frame Renderer::make_frame(const Scene& scene, Frame&& frame) const {
@@ -94,11 +93,13 @@ Frame Renderer::make_frame(const Scene& scene, Frame&& frame) const {
     Matrix4 VP = camera.make_projection_matrix(frame.aspect_ratio()) * view_matrix;
     for (auto& object : scene.get_objects()) {
         const auto& material = object.get_material();
-        for (auto& triangle : object.get_triangles()) {
-            const auto& M = object.get_transform_matrix();
-            auto MV = view_matrix * M;
-            auto MVP = VP * M;
+        const auto& M = object.get_transform_matrix();
+        auto MV = view_matrix * M;
+        auto MVP = VP * M;
 
+#pragma omp parallel for schedule(auto), default(none), shared(object), shared(MV), \
+    shared(MVP), shared(material), shared(shader), shared(frame)
+        for (auto& triangle : object.get_triangles()) {
             auto polygon = ClipPolygon(triangle, MV, MVP);
             polygon = clip_polygon_against_plane(polygon, Near);
             polygon = clip_polygon_against_plane(polygon, Left);
@@ -112,7 +113,7 @@ Frame Renderer::make_frame(const Scene& scene, Frame&& frame) const {
                 for (Index i = 1; i + 1 < polygon.get_vertices_count(); i++) {
                     const auto& v1 = polygon.get_vertex(i);
                     const auto& v2 = polygon.get_vertex(i + 1);
-                    frame = rasterize_triangle(v0, v1, v2, material, shader, std::move(frame));
+                    rasterize_triangle(v0, v1, v2, material, shader, &frame);
                 }
             }
         }
