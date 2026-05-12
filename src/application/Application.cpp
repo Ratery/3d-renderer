@@ -45,7 +45,7 @@ void Application::run() {
                 window.close();
             }
         }
-        handle_keyboard_input();
+        handle_keyboard_input(dt);
         handle_mouse_input();
         frame = renderer_.make_frame(scene_, std::move(frame));
         view_.show(frame);
@@ -70,29 +70,30 @@ Scene Application::make_scene() {
     return scene;
 }
 
-void Application::handle_keyboard_input() {
+void Application::handle_keyboard_input(float dt) {
     using sf::Keyboard::isKeyPressed;
     using sf::Keyboard::Scancode;
 
     auto& camera = scene_.camera();
+    float distance = dt * camera_move_speed;
 
     if (isKeyPressed(Scancode::W)) {
-        camera.move_forward(camera_move_speed);
+        camera.move_forward(distance);
     }
     if (isKeyPressed(Scancode::S)) {
-        camera.move_backward(camera_move_speed);
+        camera.move_backward(distance);
     }
     if (isKeyPressed(Scancode::A)) {
-        camera.move_left(camera_move_speed);
+        camera.move_left(distance);
     }
     if (isKeyPressed(Scancode::D)) {
-        camera.move_right(camera_move_speed);
+        camera.move_right(distance);
     }
     if (isKeyPressed(Scancode::Q)) {
-        camera.move_up(camera_move_speed);
+        camera.move_up(distance);
     }
     if (isKeyPressed(Scancode::E)) {
-        camera.move_down(camera_move_speed);
+        camera.move_down(distance);
     }
 }
 
