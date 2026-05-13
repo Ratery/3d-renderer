@@ -1,9 +1,9 @@
-#include "Renderer.h"
+#include "rendering/Renderer.h"
 
 #include <cassert>
 
+#include "core/Color.h"
 #include "core/Linalg.h"
-#include "lighting/Color.h"
 
 namespace renderer {
 
@@ -97,8 +97,8 @@ Frame Renderer::make_frame(const Scene& scene, Frame&& frame) const {
         auto MV = view_matrix * M;
         auto MVP = VP * M;
 
-#pragma omp parallel for schedule(auto), default(none), shared(object), shared(MV), \
-    shared(MVP), shared(material), shared(shader), shared(frame)
+#pragma omp parallel for schedule(auto), default(none), shared(object), shared(MV), shared(MVP), \
+    shared(material), shared(shader), shared(frame)
         for (auto& triangle : object.get_triangles()) {
             auto polygon = ClipPolygon(triangle, MV, MVP);
             polygon = clip_polygon_against_plane(polygon, Near);

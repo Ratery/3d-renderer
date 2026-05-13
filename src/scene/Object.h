@@ -4,7 +4,7 @@
 
 #include "core/Linalg.h"
 #include "core/Triangle.h"
-#include "lighting/Material.h"
+#include "rendering/material/Material.h"
 
 namespace renderer {
 

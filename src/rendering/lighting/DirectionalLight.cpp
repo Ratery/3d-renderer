@@ -1,4 +1,4 @@
-#include "DirectionalLight.h"
+#include "rendering/lighting/DirectionalLight.h"
 
 namespace renderer {
 

@@ -3,8 +3,8 @@
 #include <SFML/System/Clock.hpp>
 #include <utility>
 
-#include "lighting/DirectionalLight.h"
-#include "loader/ObjLoader.h"
+#include "rendering/lighting/DirectionalLight.h"
+#include "resources/mesh/ObjLoader.h"
 
 namespace renderer {
 

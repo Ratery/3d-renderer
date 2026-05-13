@@ -1,8 +1,8 @@
-#include "Scene.h"
+#include "scene/Scene.h"
 
 #include <utility>
 
-#include "Object.h"
+#include "scene/Object.h"
 
 namespace renderer {
 

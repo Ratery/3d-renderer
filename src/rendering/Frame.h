@@ -3,8 +3,8 @@
 #include <vector>
 
 #include "SFML/Graphics/Color.hpp"
+#include "core/Color.h"
 #include "core/Linalg.h"
-#include "lighting/Color.h"
 
 namespace renderer {
 

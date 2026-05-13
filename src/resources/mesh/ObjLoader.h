@@ -2,6 +2,7 @@
 
 #include <string>
 
+#include "core/Linalg.h"
 #include "scene/Object.h"
 
 namespace renderer {

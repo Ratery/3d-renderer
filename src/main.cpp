@@ -1,6 +1,6 @@
 #include "application/Application.h"
 #include "exceptions/Except.h"
-#include "render/Frame.h"
+#include "rendering/Frame.h"
 
 int main() {
     using namespace renderer;

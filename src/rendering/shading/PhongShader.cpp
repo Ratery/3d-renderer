@@ -1,4 +1,4 @@
-#include "PhongShader.h"
+#include "rendering/shading/PhongShader.h"
 
 #include <algorithm>
 #include <cassert>

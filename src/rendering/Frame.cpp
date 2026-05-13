@@ -1,7 +1,7 @@
-#include "Frame.h"
+#include "rendering/Frame.h"
 
-#include <cassert>
 #include <algorithm>
+#include <cassert>
 
 namespace renderer {
 

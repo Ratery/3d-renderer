@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Linalg.h"
+#include "core/Linalg.h"
 
 namespace renderer {
 

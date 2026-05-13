@@ -2,8 +2,9 @@
 
 #include <array>
 
-#include "ClipVertex.h"
+#include "core/Linalg.h"
 #include "core/Triangle.h"
+#include "rendering/pipeline/ClipVertex.h"
 
 namespace renderer {
 

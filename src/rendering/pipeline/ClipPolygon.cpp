@@ -1,4 +1,4 @@
-#include "ClipPolygon.h"
+#include "rendering/pipeline/ClipPolygon.h"
 
 #include <cassert>
 

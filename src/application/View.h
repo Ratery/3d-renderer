@@ -1,7 +1,8 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include "render/Frame.h"
+
+#include "rendering/Frame.h"
 
 namespace renderer {
 

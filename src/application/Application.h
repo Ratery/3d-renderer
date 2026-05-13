@@ -1,8 +1,8 @@
 #pragma once
 
-#include "View.h"
-#include "render/Frame.h"
-#include "render/Renderer.h"
+#include "application/View.h"
+#include "rendering/Frame.h"
+#include "rendering/Renderer.h"
 #include "scene/Scene.h"
 
 namespace renderer {

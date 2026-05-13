@@ -1,4 +1,4 @@
-#include "Triangle.h"
+#include "core/Triangle.h"
 
 namespace renderer {
 

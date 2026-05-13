@@ -1,4 +1,4 @@
-#include "AmbientLight.h"
+#include "rendering/lighting/AmbientLight.h"
 
 namespace renderer {
 

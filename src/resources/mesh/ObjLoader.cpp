@@ -1,4 +1,4 @@
-#include "ObjLoader.h"
+#include "resources/mesh/ObjLoader.h"
 
 #include <fstream>
 #include <iostream>

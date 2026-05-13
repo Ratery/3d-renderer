@@ -1,10 +1,10 @@
 #pragma once
 
-#include "AmbientLight.h"
-#include "Color.h"
-#include "DirectionalLight.h"
-#include "Material.h"
+#include "core/Color.h"
 #include "core/Linalg.h"
+#include "rendering/lighting/AmbientLight.h"
+#include "rendering/lighting/DirectionalLight.h"
+#include "rendering/material/Material.h"
 
 namespace renderer {
 

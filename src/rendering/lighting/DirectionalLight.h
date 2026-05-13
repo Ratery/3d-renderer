@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Color.h"
+#include "core/Color.h"
 #include "core/Linalg.h"
 
 namespace renderer {

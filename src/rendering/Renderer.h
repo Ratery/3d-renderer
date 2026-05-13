@@ -1,10 +1,10 @@
 #pragma once
 
-#include "ClipPolygon.h"
-#include "ClipVertex.h"
-#include "Frame.h"
-#include "lighting/Material.h"
-#include "lighting/PhongShader.h"
+#include "rendering/Frame.h"
+#include "rendering/material/Material.h"
+#include "rendering/pipeline/ClipPolygon.h"
+#include "rendering/pipeline/ClipVertex.h"
+#include "rendering/shading/PhongShader.h"
 #include "scene/Scene.h"
 
 namespace renderer {

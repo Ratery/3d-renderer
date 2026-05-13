@@ -2,10 +2,10 @@
 
 #include <vector>
 
-#include "Camera.h"
-#include "Object.h"
-#include "lighting/AmbientLight.h"
-#include "lighting/DirectionalLight.h"
+#include "rendering/lighting/AmbientLight.h"
+#include "rendering/lighting/DirectionalLight.h"
+#include "scene/Camera.h"
+#include "scene/Object.h"
 
 namespace renderer {
 
