@@ -14,7 +14,8 @@ class PhongShader {
                 const std::vector<DirectionalLight>& directional_lights,
                 const Matrix4& view_matrix);
 
-    Color shade(const Material& material, const Vector3& normal, const Vector3& view_pos) const;
+    Color shade(const Material& material, const Vector3& normal, const Vector3& view_pos,
+                const Vector2& uv) const;
 
    private:
     AmbientLight ambient_light_;

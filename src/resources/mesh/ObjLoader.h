@@ -10,6 +10,7 @@ namespace renderer {
 struct FaceVertex {
     int position_idx;
     int normal_idx;
+    int uv_idx;
 };
 
 class ObjLoader {
@@ -22,12 +23,12 @@ class ObjLoader {
    private:
     std::vector<Vector3> positions_;
     std::vector<Vector3> normals_;
-    std::string filename_;
-    std::string current_line_;
+    std::vector<Vector2> uvs_;
     Object object_;
 
     static Vector3 parse_vertex(const std::string& line);
     static Vector3 parse_normal(const std::string& line);
+    static Vector2 parse_uv(const std::string& line);
     std::vector<FaceVertex> parse_face(const std::string& line) const;
     void process_face(const std::vector<FaceVertex>& face);
     Triangle make_triangle(const FaceVertex& v0, const FaceVertex& v1, const FaceVertex& v2) const;

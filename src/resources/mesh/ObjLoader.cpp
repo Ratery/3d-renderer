@@ -39,6 +39,8 @@ ObjLoader::ObjLoader(const std::string& filename) {
             positions_.emplace_back(parse_vertex(line));
         } else if (type == "vn") {
             normals_.emplace_back(parse_normal(line));
+        } else if (type == "vt") {
+            uvs_.emplace_back(parse_uv(line));
         } else if (type == "f") {
             auto face = parse_face(line);
             process_face(face);
@@ -79,6 +81,19 @@ Vector3 ObjLoader::parse_normal(const std::string& line) {
     return {x, y, z};
 }
 
+Vector2 ObjLoader::parse_uv(const std::string& line) {
+    std::istringstream stream(line);
+    std::string type;
+    stream >> type;
+    float u, v;
+    if (!(stream >> u >> v)) {
+        std::cerr << "[ERROR]: Could not parse texture coordinates from \"" << line << "\""
+                  << std::endl;
+        return Vector2::Zero();
+    }
+    return {u, v};
+}
+
 std::vector<FaceVertex> ObjLoader::parse_face(const std::string& line) const {
     std::vector<FaceVertex> face;
     std::string tuple;
@@ -111,7 +126,17 @@ std::vector<FaceVertex> ObjLoader::parse_face(const std::string& line) const {
                 return face;
             }
         }
-        face.emplace_back(v, vn);
+
+        int vt = -1;
+        if (!vt_str.empty()) {
+            vt = parse_index(vt_str, uvs_.size());
+            if (!is_in_bounds(vt, uvs_)) {
+                std::cerr << "[ERROR]: Texture coordinates index " << vt_str << " out of range"
+                          << std::endl;
+                return face;
+            }
+        }
+        face.emplace_back(v, vn, vt);
     }
     return face;
 }
@@ -132,13 +157,17 @@ Triangle ObjLoader::make_triangle(const FaceVertex& v0, const FaceVertex& v1,
     auto& p0 = positions_[v0.position_idx];
     auto& p1 = positions_[v1.position_idx];
     auto& p2 = positions_[v2.position_idx];
+    auto& uv0 = v0.uv_idx == -1 ? Vector2::Zero() : uvs_[v0.uv_idx];
+    auto& uv1 = v1.uv_idx == -1 ? Vector2::Zero() : uvs_[v1.uv_idx];
+    auto& uv2 = v2.uv_idx == -1 ? Vector2::Zero() : uvs_[v2.uv_idx];
     if (v0.normal_idx != -1 && v1.normal_idx != -1 && v2.normal_idx != -1) {
         return {
-            p0, p1, p2, normals_[v0.normal_idx], normals_[v1.normal_idx], normals_[v2.normal_idx]};
+            p0,  p1,  p2, normals_[v0.normal_idx], normals_[v1.normal_idx], normals_[v2.normal_idx],
+            uv0, uv1, uv2};
     }
 
     Vector3 face_normal = (p1 - p0).cross(p2 - p0).normalized();
-    return {p0, p1, p2, face_normal};
+    return {p0, p1, p2, face_normal, uv0, uv1, uv2};
 }
 
 }  // namespace renderer

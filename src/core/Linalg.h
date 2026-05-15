@@ -12,6 +12,7 @@ using Vector4 = Eigen::Vector4f;
 
 using Matrix3 = Eigen::Matrix3f;
 using Matrix4 = Eigen::Matrix4f;
+using Matrix2x3 = Eigen::Matrix<float, 2, 3>;
 using Matrix4x3 = Eigen::Matrix<float, 4, 3>;
 
 inline Matrix4 make_translation_matrix(const Vector3& translation) {

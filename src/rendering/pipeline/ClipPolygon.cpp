@@ -4,10 +4,10 @@
 
 namespace renderer {
 
-ClipPolygon::ClipPolygon() : count_(0) {}
+ClipPolygon::ClipPolygon() : vertices_({}), count_(0) {}
 
 ClipPolygon::ClipPolygon(const Triangle& triangle, const Matrix4& MV, const Matrix4& MVP)
-    : count_(3) {
+    : vertices_({}), count_(3) {
     auto view_normals = (MV * triangle.get_normals()).colwise().normalized();
     auto view_pos = MV * triangle.get_vertices();
     auto clip_pos = MVP * triangle.get_vertices();
@@ -16,6 +16,7 @@ ClipPolygon::ClipPolygon(const Triangle& triangle, const Matrix4& MV, const Matr
         vertices_[i].clip_pos = clip_pos.col(i);
         vertices_[i].view_pos = view_pos.col(i).head<3>();
         vertices_[i].view_normal = view_normals.col(i).head<3>();
+        vertices_[i].uv = triangle.uv(i);
     }
 }
 

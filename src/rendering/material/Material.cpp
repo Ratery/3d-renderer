@@ -17,6 +17,10 @@ float Material::get_shininess() const {
     return shininess_;
 }
 
+const std::shared_ptr<const Texture>& Material::get_diffuse_map() const {
+    return diffuse_map_;
+}
+
 void Material::set_albedo(const Color& albedo) {
     albedo_ = albedo;
 }
@@ -27,6 +31,10 @@ void Material::set_specular(const Color& specular) {
 
 void Material::set_shininess(float shininess) {
     shininess_ = shininess;
+}
+
+void Material::set_diffuse_map(const std::shared_ptr<const Texture>& diffuse_map) {
+    diffuse_map_ = diffuse_map;
 }
 
 }  // namespace renderer

@@ -29,7 +29,7 @@ bool is_in_std_box(const Vector3& ndc, float eps) {
 
 ClipVertex interpolate_clip_vertex(const ClipVertex& a, const ClipVertex& b, float t) {
     return {a.clip_pos + t * (b.clip_pos - a.clip_pos), a.view_pos + t * (b.view_pos - a.view_pos),
-            a.view_normal + t * (b.view_normal - a.view_normal)};
+            a.view_normal + t * (b.view_normal - a.view_normal), a.uv + t * (b.uv - a.uv)};
 }
 
 }  // namespace
@@ -59,6 +59,8 @@ void Renderer::rasterize_triangle(const ClipVertex& v0, const ClipVertex& v1, co
     view_pos << v0.view_pos, v1.view_pos, v2.view_pos;
     Matrix3 view_normals;
     view_normals << v0.view_normal, v1.view_normal, v2.view_normal;
+    Matrix2x3 uvs;
+    uvs << v0.uv, v1.uv, v2.uv;
     Vector3 inv_z_row = view_pos.row(2).cwiseInverse();
 
     for (Index x = start_x; x <= end_x; x++) {
@@ -78,7 +80,8 @@ void Renderer::rasterize_triangle(const ClipVertex& v0, const ClipVertex& v1, co
 
                 Vector3 frag_normal = (view_normals * lerp_weights).normalized();
                 Vector3 frag_view_pos = view_pos * lerp_weights;
-                Color color = shader.shade(material, frag_normal, frag_view_pos);
+                Vector2 frag_uv = uvs * lerp_weights;
+                Color color = shader.shade(material, frag_normal, frag_view_pos, frag_uv);
                 frame->set_pixel(x, y, depth, color);
             }
         }
