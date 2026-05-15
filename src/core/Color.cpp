@@ -6,6 +6,11 @@ Color::Color(float r, float g, float b, float a) : data_(r, g, b, a) {
     data_ = data_.cwiseMax(0.0f).cwiseMin(1.0f);
 }
 
+Color Color::from_RGBA8(uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+    return {static_cast<float>(r) / 255.0f, static_cast<float>(g) / 255.0f,
+            static_cast<float>(b) / 255.0f, static_cast<float>(a) / 255.0f};
+}
+
 float Color::r() const {
     return data_(0);
 }

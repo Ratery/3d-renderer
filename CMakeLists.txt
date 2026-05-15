@@ -12,6 +12,8 @@ add_executable(${PROJECT_NAME}
         src/core/Color.cpp
         src/core/Triangle.cpp
         src/resources/mesh/ObjLoader.cpp
+        src/resources/texture/Texture.cpp
+        src/resources/texture/TextureLoader.cpp
         src/rendering/Frame.cpp
         src/rendering/Renderer.cpp
         src/rendering/pipeline/ClipPolygon.cpp
@@ -28,7 +30,9 @@ add_executable(${PROJECT_NAME}
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/src)
+        ${CMAKE_CURRENT_SOURCE_DIR}/src
+        ${CMAKE_CURRENT_SOURCE_DIR}/external/stb
+)
 
 find_package(OpenMP REQUIRED)
 
@@ -48,7 +52,7 @@ set(WARNINGS
 target_compile_options(${PROJECT_NAME} PRIVATE
         ${WARNINGS}
         $<$<CONFIG:Debug>:-O0 -g>
-        $<$<CONFIG:Release>:-O3 -march=native -ffast-math>
+        $<$<CONFIG:Release>:-O3 -march=native -ffast-math -flto>
 )
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE
