@@ -20,12 +20,12 @@ Matrix4 Camera::make_projection_matrix(float aspect_ratio) const {  // TODO: spl
     return Matrix4{
         {near_ / right, 0.0f, 0.0f, 0.0f},
         {0.0f, near_ / top, 0.0f, 0.0f},
-        {0.0f, 0.0f, (far_ + near_) / (far_ - near_), -2.0f * near_ * far_ / (far_ - near_)},
-        {0.0f, 0.0f, 1.0f, 0.0f}};
+        {0.0f, 0.0f, -(far_ + near_) / (far_ - near_), -2.0f * near_ * far_ / (far_ - near_)},
+        {0.0f, 0.0f, -1.0f, 0.0f}};
 }
 
 void Camera::move_forward(float distance) {
-    Vector3 translation = distance * Vector3::UnitZ();
+    Vector3 translation = distance * -Vector3::UnitZ();
     view_matrix_ = make_translation_matrix(-translation) * view_matrix_;  // V' = T^(-1) * V
 }
 

@@ -65,7 +65,7 @@ void Renderer::rasterize_triangle(const ClipVertex& v0, const ClipVertex& v1, co
 
     for (Index x = start_x; x <= end_x; x++) {
         for (Index y = start_y; y <= end_y; y++) {
-            Vector2 u = Vector2(static_cast<float>(x) + 0.5f, static_cast<float>(y) + 0.5f);
+            Vector2 u(static_cast<float>(x) + 0.5f, static_cast<float>(y) + 0.5f);
 
             float area = (p2 - p0).cross(p1 - p0);
             Vector3 w;
@@ -163,9 +163,9 @@ float Renderer::eval_plane(FrustumPlaneType type, const Vector4& v) const {
         case Top:
             return -v.y() + v.w();
         case Near:
-            return v.z() + v.w();
-        case Far:
             return -v.z() + v.w();
+        case Far:
+            return v.z() + v.w();
     }
     return 0.0f;
 }

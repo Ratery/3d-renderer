@@ -24,7 +24,6 @@ class Camera {
     float near_;
     float far_;
     float fov_;
-    Vector3 forward_vec_;
     Matrix4 view_matrix_;
 
     Vector3 get_world_up_vector() const;
