@@ -74,15 +74,18 @@ void Renderer::rasterize_triangle(const ClipVertex& v0, const ClipVertex& v1, co
             w(0) = 1.0f - w(1) - w(2);
 
             if (w(0) >= -eps_ && w(1) >= -eps_ && w(2) >= -eps_) {
-                float depth = Vector3(ndc_0.z(), ndc_1.z(), ndc_2.z()).dot(w);
-                float inv_z = inv_z_row.dot(w);
-                auto lerp_weights = inv_z_row.cwiseProduct(w) * (1.0f / inv_z);
+                float ndc_z = Vector3(ndc_0.z(), ndc_1.z(), ndc_2.z()).dot(w);
+                float depth = ndc_z * 0.5f + 0.5f;
+                if (frame->is_depth_visible(x, y, depth)) {
+                    float inv_z = inv_z_row.dot(w);
+                    auto lerp_weights = inv_z_row.cwiseProduct(w) * (1.0f / inv_z);
 
-                Vector3 frag_normal = (view_normals * lerp_weights).normalized();
-                Vector3 frag_view_pos = view_pos * lerp_weights;
-                Vector2 frag_uv = uvs * lerp_weights;
-                Color color = shader.shade(material, frag_normal, frag_view_pos, frag_uv);
-                frame->set_pixel(x, y, depth, color);
+                    Vector3 frag_normal = (view_normals * lerp_weights).normalized();
+                    Vector3 frag_view_pos = view_pos * lerp_weights;
+                    Vector2 frag_uv = uvs * lerp_weights;
+                    Color color = shader.shade(material, frag_normal, frag_view_pos, frag_uv);
+                    frame->set_pixel(x, y, depth, color);
+                }
             }
         }
     }
