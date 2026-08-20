@@ -16,14 +16,15 @@ class Frame {
    public:
     Frame(Width width, Height height);
 
-    bool is_depth_visible(Index x, Index y, float depth) const;
+    bool is_depth_visible(Index x, Index y, Index sample_id, float depth) const;
 
-    void set_pixel(Index x, Index y, float depth, const Color& color);
+    void set_color(Index x, Index y, Index sample_id, float depth, const Color& color);
 
     void reset();
 
-    void get_pixel(Index x, Index y) const;
-    const std::vector<std::uint8_t>& get_pixels() const;
+    void resolve();
+
+    const std::vector<std::uint8_t>& get_resolved_pixels() const;
 
     Width width() const;
     Height height() const;
@@ -33,14 +34,16 @@ class Frame {
    private:
     Index width_;
     Index height_;
-    std::vector<std::uint8_t> pixels_;
+    std::vector<Color> sample_colors_;
+    std::vector<std::uint8_t> resolved_pixels_;
     std::vector<std::atomic<std::uint32_t>> z_buffer_;
 
     static constexpr float max_depth_ = 1.0f;
+    static constexpr Index msaa_samples_ = 4;
 
-    std::uint8_t& pixels(Index x, Index y);
-    std::atomic<std::uint32_t>& z_buffer(Index x, Index y);
-    const std::atomic<std::uint32_t>& z_buffer(Index x, Index y) const;
+    Color& sample_colors(Index x, Index y, Index sample_id);
+    std::atomic<std::uint32_t>& z_buffer(Index x, Index y, Index sample_id);
+    const std::atomic<std::uint32_t>& z_buffer(Index x, Index y, Index sample_id) const;
 
     static std::uint32_t depth_to_uint(float depth);
     static float uint_to_depth(std::uint32_t value);

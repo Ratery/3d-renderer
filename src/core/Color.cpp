@@ -1,10 +1,14 @@
 #include "core/Color.h"
 
+#include <utility>
+
 namespace renderer {
 
-Color::Color(float r, float g, float b, float a) : data_(r, g, b, a) {
-    data_ = data_.cwiseMax(0.0f).cwiseMin(1.0f);
-}
+Color::Color() : data_(0.0f, 0.0f, 0.0f, 0.0f) {}
+
+Color::Color(float r, float g, float b, float a) : data_(r, g, b, a) {}
+
+Color::Color(Vector4 data) : data_(std::move(data)) {}
 
 Color Color::from_RGBA8(uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
     return {static_cast<float>(r) / 255.0f, static_cast<float>(g) / 255.0f,
@@ -27,8 +31,12 @@ float Color::a() const {
     return data_(3);
 }
 
+Color Color::clamped() const {
+    return {data_.cwiseMax(0.0f).cwiseMin(1.0f)};
+}
+
 Color& Color::operator+=(const Color& other) {
-    data_ = (data_ + other.data_).cwiseMin(1.0f);
+    data_ += other.data_;
     return *this;
 }
 
@@ -39,12 +47,12 @@ Color Color::operator+(const Color& other) const {
 }
 
 Color& Color::operator*=(float scalar) {
-    data_ = (data_ * scalar).cwiseMax(0.0f).cwiseMin(1.0f);
+    data_ *= scalar;
     return *this;
 }
 
 Color& Color::operator*=(const Color& other) {
-    data_ = data_.cwiseProduct(other.data_).cwiseMin(1.0f);
+    data_ = data_.cwiseProduct(other.data_);
     return *this;
 }
 
@@ -57,6 +65,17 @@ Color Color::operator*(float scalar) const {
 Color Color::operator*(const Color& other) const {
     Color result = *this;
     result *= other;
+    return result;
+}
+
+Color& Color::operator/=(float scalar) {
+    data_ /= scalar;
+    return *this;
+}
+
+Color Color::operator/(float scalar) const {
+    Color result = *this;
+    result /= scalar;
     return result;
 }
 

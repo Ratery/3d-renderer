@@ -1,5 +1,6 @@
 #include "rendering/Renderer.h"
 
+#include <array>
 #include <cassert>
 
 #include "core/Color.h"
@@ -30,6 +31,15 @@ bool is_in_std_box(const Vector3& ndc, float eps) {
 ClipVertex interpolate_clip_vertex(const ClipVertex& a, const ClipVertex& b, float t) {
     return {a.clip_pos + t * (b.clip_pos - a.clip_pos), a.view_pos + t * (b.view_pos - a.view_pos),
             a.view_normal + t * (b.view_normal - a.view_normal), a.uv + t * (b.uv - a.uv)};
+}
+
+Vector3 calc_barycentric_coords(const Vector2& u, const Vector2& p0, const Vector2& p1,
+                                const Vector2& p2, float area) {
+    Vector3 w;
+    w(1) = (p2 - p0).cross(u - p0) / area;
+    w(2) = (u - p0).cross(p1 - p0) / area;
+    w(0) = 1.0f - w(1) - w(2);
+    return w;
 }
 
 }  // namespace
@@ -65,27 +75,38 @@ void Renderer::rasterize_triangle(const ClipVertex& v0, const ClipVertex& v1, co
 
     for (Index x = start_x; x <= end_x; x++) {
         for (Index y = start_y; y <= end_y; y++) {
-            Vector2 u(static_cast<float>(x) + 0.5f, static_cast<float>(y) + 0.5f);
+            constexpr std::array<Vector2, 4> sample_offsets = {
+                {{-0.25f, -0.25f}, {-0.25f, 0.25f}, {0.25f, -0.25f}, {0.25f, 0.25f}}};
+            Vector2 center(static_cast<float>(x) + 0.5f, static_cast<float>(y) + 0.5f);
 
-            float area = (p2 - p0).cross(p1 - p0);
-            Vector3 w;
-            w(1) = (p2 - p0).cross(u - p0) / area;
-            w(2) = (u - p0).cross(p1 - p0) / area;
-            w(0) = 1.0f - w(1) - w(2);
+            bool is_color_calculated = false;
+            Color calculated_color;
 
-            if (w(0) >= -eps_ && w(1) >= -eps_ && w(2) >= -eps_) {
-                float ndc_z = Vector3(ndc_0.z(), ndc_1.z(), ndc_2.z()).dot(w);
+            for (Index sample_id = 0; sample_id < 4; sample_id++) {
+                Vector2 sample_coords = center + sample_offsets[sample_id];
+                float area = (p2 - p0).cross(p1 - p0);
+                auto barycentric = calc_barycentric_coords(sample_coords, p0, p1, p2, area);
+
+                if ((barycentric.array() < -eps_).any()) {
+                    continue;
+                }
+                float ndc_z = Vector3(ndc_0.z(), ndc_1.z(), ndc_2.z()).dot(barycentric);
                 float depth = ndc_z * 0.5f + 0.5f;
-                if (frame->is_depth_visible(x, y, depth)) {
-                    float inv_z = inv_z_row.dot(w);
-                    auto lerp_weights = inv_z_row.cwiseProduct(w) * (1.0f / inv_z);
+                if (!frame->is_depth_visible(x, y, sample_id, depth)) {
+                    continue;
+                }
+
+                if (!is_color_calculated) {
+                    float inv_z = inv_z_row.dot(barycentric);
+                    auto lerp_weights = inv_z_row.cwiseProduct(barycentric) * (1.0f / inv_z);
 
                     Vector3 frag_normal = (view_normals * lerp_weights).normalized();
                     Vector3 frag_view_pos = view_pos * lerp_weights;
                     Vector2 frag_uv = uvs * lerp_weights;
-                    Color color = shader.shade(material, frag_normal, frag_view_pos, frag_uv);
-                    frame->set_pixel(x, y, depth, color);
+                    calculated_color = shader.shade(material, frag_normal, frag_view_pos, frag_uv);
+                    is_color_calculated = true;
                 }
+                frame->set_color(x, y, sample_id, depth, calculated_color);
             }
         }
     }
@@ -124,6 +145,7 @@ Frame Renderer::make_frame(const Scene& scene, Frame&& frame) const {
             }
         }
     }
+    frame.resolve();
     return frame;
 }
 
