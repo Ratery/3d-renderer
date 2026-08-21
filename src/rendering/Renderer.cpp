@@ -127,6 +127,12 @@ Frame Renderer::make_frame(const Scene& scene, Frame&& frame) const {
 #pragma omp parallel for schedule(auto), default(none), shared(object), shared(MV), shared(MVP), \
     shared(material), shared(shader), shared(frame)
         for (auto& triangle : object.get_triangles()) {
+            auto face_normal = MV * triangle.face_normal();
+            auto view_pos = MV * triangle.vertex4(0);
+            if (face_normal.dot(view_pos) < 0.0f) {  // backface culling
+                continue;
+            }
+
             auto polygon = ClipPolygon(triangle, MV, MVP);
             polygon = clip_polygon_against_plane(polygon, Near);
             polygon = clip_polygon_against_plane(polygon, Left);

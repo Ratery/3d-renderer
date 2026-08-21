@@ -8,9 +8,12 @@ ClipPolygon::ClipPolygon() : vertices_({}), count_(0) {}
 
 ClipPolygon::ClipPolygon(const Triangle& triangle, const Matrix4& MV, const Matrix4& MVP)
     : vertices_({}), count_(3) {
-    auto view_normals = (MV * triangle.get_normals()).colwise().normalized();
-    auto view_pos = MV * triangle.get_vertices();
-    auto clip_pos = MVP * triangle.get_vertices();
+    Matrix4x3 view_pos;
+    view_pos.noalias() = MV * triangle.get_vertices();
+    Matrix4x3 view_normals;
+    view_normals.noalias() = (MV * triangle.get_normals()).colwise().normalized();
+    Matrix4x3 clip_pos;
+    clip_pos.noalias() = MVP * triangle.get_vertices();
 
     for (int i = 0; i < 3; i++) {
         vertices_[i].clip_pos = clip_pos.col(i);
