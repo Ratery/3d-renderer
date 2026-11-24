@@ -1,0 +1,40 @@
+#include "rendering/material/Material.h"
+
+namespace renderer {
+
+Material::Material(const Color& albedo, const Color& specular, float shininess)
+    : albedo_(albedo), specular_(specular), shininess_(shininess) {}
+
+const Color& Material::get_albedo() const {
+    return albedo_;
+}
+
+const Color& Material::get_specular() const {
+    return specular_;
+}
+
+float Material::get_shininess() const {
+    return shininess_;
+}
+
+const std::shared_ptr<const Texture>& Material::get_diffuse_map() const {
+    return diffuse_map_;
+}
+
+void Material::set_albedo(const Color& albedo) {
+    albedo_ = albedo;
+}
+
+void Material::set_specular(const Color& specular) {
+    specular_ = specular;
+}
+
+void Material::set_shininess(float shininess) {
+    shininess_ = shininess;
+}
+
+void Material::set_diffuse_map(const std::shared_ptr<const Texture>& diffuse_map) {
+    diffuse_map_ = diffuse_map;
+}
+
+}  // namespace renderer
