@@ -22,7 +22,7 @@ View::View(Width width, Height height, const std::string& title)
 void View::show(const Frame& frame) {
     assert(texture_.getSize().x == frame.width() && texture_.getSize().y == frame.height());
 
-    texture_.update(frame.get_pixels().data());
+    texture_.update(frame.get_resolved_pixels().data());
     window_.clear();
     sprite_.setTexture(texture_);
     window_.draw(sprite_);
